@@ -1,0 +1,69 @@
+{
+  "summary": "Ran comprehensive backend + frontend testing for UG Campus App. Backend: 20/20 pytest cases passed (auth, signup+dup, /me, onboarding, programs/levels/courses, my_courses persistence + auto-join, timetable mine/today, resources default+by-course, scripture deterministic, planner CRUD + /planner/day merged blocks with classes locked=true, GPA calc CGPA 3.18, chat member 200 / non-member 403; all responses free of _id and password_hash). Frontend: login, scripture gate, dashboard with today-strip, timetable, planner (add/delete via API path), GPA, resources tab render fine; testIDs present on all critical elements. Two frontend bugs found: (1) planner add-task modal Save button is positioned off-viewport on 390x844 mobile — modal does not overlay/scroll properly, users can't tap Save unless they scroll a very long page; (2) profile-signout clears auth but does not redirect to /login — stays on tabs dashboard with blank profile ('—'). One minor spec deviation: tab labeled 'LIBRARY' instead of 'Resources'. No deprecated Expo packages detected.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Planner Add-Task Modal",
+        "issue": "Modal Save button (data-testid='planner-modal-save') is rendered at y≈1596px inside 844px viewport, i.e. off-screen. Modal is not overlaying as a proper bottom-sheet/dialog on mobile — content is appended after the page and requires scrolling; the screenshot shows the Agenda page unchanged after opening the modal. Users on 390x844 cannot tap Save without scrolling past the tab bar. Fix: wrap modal content in Modal/ScrollView with maxHeight and use presentationStyle='overFullScreen'/animationType='slide' or use React Native Modal component with a KeyboardAvoidingView.",
+        "testID": "planner-modal-save",
+        "priority": "HIGH"
+      },
+      {
+        "component": "Sign-out",
+        "issue": "Tapping profile-signout in dashboard clears the JWT but does not navigate to /login. Dashboard remains rendered with 'Akwaaba, student.' and program/level shown as '—'. Auth guard in (tabs)/_layout.tsx or AuthContext should redirect to /login on token clear. Fix: after signOut(), router.replace('/login') or add a useEffect in (tabs)/_layout that redirects when user is null.",
+        "testID": "profile-signout",
+        "priority": "HIGH"
+      },
+      {
+        "component": "Bottom tab bar",
+        "issue": "Resources tab is labeled 'LIBRARY' in the UI whereas the spec/PRD references it as the 'Resources tab'. Consider renaming label to 'RESOURCES' (or 'LIBRARY' is acceptable if intentional — flagging for confirmation).",
+        "testID": "",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Chat via Timetable",
+        "issue": "Class rows in the Timetable tab are not pressable to open the course chat. Only Today-strip class cards route to /chat/[courseId] (see (tabs)/index.tsx:152). On weekends (like today, Sun 12 Jul 2026), the Today-strip has no class cards so the chat UI is unreachable from the tabs. Consider making Timetable rows tappable to open chat or adding a dedicated chat entry point (e.g., from Courses screen). Backend chat endpoint verified working via pytest (send/receive + 403 for non-member).",
+        "affected_testIDs": ["chat-input", "chat-send"]
+      }
+    ],
+    "design_issues": [
+      {
+        "screen": "Dashboard (Today)",
+        "issues": ["Today-strip is horizontally scrollable and shows verse + free-slot cards correctly on weekend; verse card / free-slot card contrast is good."]
+      }
+    ],
+    "react_native_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_ug_campus.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Fix planner add-task modal on mobile: use React Native Modal with visible={open} transparent animationType='slide', wrap in KeyboardAvoidingView + ScrollView with maxHeight so Save button is always reachable inside viewport.",
+    "Fix sign-out redirect: after clearing token in AuthContext.signOut(), call router.replace('/login'), or add auth-guard useEffect in app/(tabs)/_layout.tsx that redirects to '/login' when user becomes null.",
+    "(Optional) Rename bottom tab 'LIBRARY' -> 'RESOURCES' to match PRD, or update PRD to match UI.",
+    "(Optional) Make Timetable class rows pressable to open /chat/[courseId] so chat is reachable on weekends and consistently across screens."
+  ],
+  "critical_code_review_comments": [
+    "server.py is 707 lines — approaching split threshold (>700). Consider splitting into routers/ (auth.py, courses.py, planner.py, chat.py, gpa.py) to keep files focused.",
+    "gpa_calc uses g.credit as float and sums into total_credits — response returns 'total_credits' as a float even for integer credit input; frontend may want int or a formatted string.",
+    "chat_messages find is not bounded by 'since' when 'since' is None — for a busy chat this could grow unbounded. Consider .sort('created_at', -1).limit(100) then reverse.",
+    "No index on (course_id, created_at) for chat_messages, (user_id, date) for tasks, (user_id) for selections — add indexes in seed_database() startup for scale."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_ug_campus.py (new)",
+    "/app/test_reports/iteration_1.json (new)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "~80%"},
+  "seed_data_creation": "No new seed data created. All backend seeds (programs, levels, courses, timetable, resources, scriptures, admin, student with 4 pre-selected CS 300 courses) were verified working. Test-created signups/tasks/messages are prefixed 'TEST_' where feasible; note signup emails are randomized (test_<hex>@ug.edu.gh, nomem_<hex>@ug.edu.gh, onb_<hex>@ug.edu.gh) — safe but will accumulate over time. Main agent may want to add a cleanup script.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Backend fully green (20/20). Two frontend fixes pending: (1) planner add-task modal off-screen Save button, (2) sign-out redirect. After fixes, re-run only the planner modal + sign-out flows on 390x844 viewport. Note current date in Emergent env is Sun 12 Jul 2026, so /timetable/today returns [] and the Today-strip won't show class cards; test chat by direct URL /chat/<course_id> using a course_id from /api/me/courses.",
+  "rca_of_issue": "Planner modal Save off-screen: the modal is likely rendered inline in the same ScrollView as the Agenda page rather than as a native overlay Modal. When opened it just extends the page height (elements at y=1596 in a 844px viewport confirm this). Sign-out redirect: AuthContext.signOut() probably clears storage state but the tabs layout only checks user on mount, not reactively, so state change doesn't trigger the guard. Fix by adding a useEffect that watches user and redirects when null."
+}
