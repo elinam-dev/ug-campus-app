@@ -1,0 +1,28 @@
+{
+  "summary": "Retest of UG Campus App after fixes for the two HIGH bugs plus the minor label + new timetable-to-chat feature. All four items verified PASS on 390x844 viewport. (1) Planner Add-Task modal now renders as a proper bottom sheet overlay: 'planner-modal-save' bounding box y=694, bottom=744 within 844 viewport (fully in-view). Save creates the task ('TEST_task_retest' appeared in agenda), CANCEL closes the modal, backdrop tap closes the modal. (2) Sign-out from Today tab (profile-signout) now redirects to /login and the login screen (login-email-input) renders. (3) Bottom tab label reads 'RESOURCES' (previously 'LIBRARY'). (4) Timetable rows are Pressable — tapping timetable-entry-CSCD 311-0 navigated to /chat/bb8a0f9b-9cab-4df3-a138-15ba4b11796f and the chat screen mounted (chat-back / chat-input / chat-send visible; existing 'TEST hello group' message rendered). Backend was not re-run (previously 20/20 green, no changes to backend). No new react-native/expo deprecations detected in the touched files.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "react_native_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_ug_campus.py",
+    "/app/test_reports/pytest/pytest_results.xml",
+    "/app/test_reports/iteration_1.json"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "planner.tsx overlay uses a plain absolutely-positioned View instead of react-native Modal component. It works on web (verified) and satisfies the fix, but on native Android hardware-back-press won't dismiss it. Optional: swap to <Modal transparent animationType='slide' onRequestClose={()=>setModal(false)}> for parity with Android back-button behaviour.",
+    "timetable.tsx: Pressable rows now navigate to /chat/{course_id}. No visual affordance (chevron / hint text) that the row is tappable; consider a small caret icon or a subtle 'tap to chat' hint for discoverability.",
+    "AuthContext.signOut uses the imported `router` singleton from expo-router; that works but breaks testability. useRouter() inside components is preferred — however the fix as-is is correct and functional."
+  ],
+  "updated_files": [],
+  "success_rate": { "backend": "100% (not re-run this iteration)", "frontend": "100%" },
+  "seed_data_creation": "One TEST_ task ('TEST_task_retest') was created for date 2026-07-12 via the planner flow. Safe to leave; can be manually deleted via the trash icon on the agenda row.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Iteration 2 retest is fully green for the two HIGH fixes (planner modal, signout redirect) and the two minor items (Resources label, timetable-row -> chat). Backend was intentionally not re-run (unchanged since iteration_1 20/20). If future changes touch server.py, re-run pytest /app/backend/tests/test_ug_campus.py before frontend retests.",
+  "rca_of_issue": "Not applicable — both prior HIGH bugs are resolved. RCA is documented in iteration_1.json."
+}

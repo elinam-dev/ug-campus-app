@@ -1,5 +1,6 @@
+import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { api } from "@/src/api/client";
@@ -7,6 +8,7 @@ import { colors, fonts, space, type as t } from "@/src/theme";
 
 type TimetableEntry = {
   id: string;
+  course_id: string;
   course_code: string;
   course_title: string;
   day_of_week: number;
@@ -19,6 +21,7 @@ const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 const DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 export default function Timetable() {
+  const router = useRouter();
   const [entries, setEntries] = useState<TimetableEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const today = new Date().getDay() - 1; // 0=Mon
@@ -73,9 +76,10 @@ export default function Timetable() {
                   </View>
                 ) : (
                   dayItems.map((e) => (
-                    <View
+                    <Pressable
                       key={e.id}
                       testID={`timetable-entry-${e.course_code}-${e.day_of_week}`}
+                      onPress={() => router.push(`/chat/${e.course_id}`)}
                       style={[styles.entry, isToday && styles.entryToday]}
                     >
                       <View style={styles.timeCol}>
@@ -88,7 +92,7 @@ export default function Timetable() {
                         <Text style={styles.entryTitle}>{e.course_title}</Text>
                         <Text style={styles.entryRoom}>Room {e.room}</Text>
                       </View>
-                    </View>
+                    </Pressable>
                   ))
                 )}
               </View>

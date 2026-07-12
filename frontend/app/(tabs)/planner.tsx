@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -143,67 +142,76 @@ export default function Planner() {
         <Text style={styles.fabText}>ADD TASK</Text>
       </Pressable>
 
-      <Modal visible={modal} animationType="slide" transparent onRequestClose={() => setModal(false)}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          style={styles.modalWrap}
-        >
-          <View style={styles.modal}>
-            <Text style={styles.modalTitle}>New task</Text>
-            <Text style={styles.label}>WHAT</Text>
-            <TextInput
-              testID="planner-new-title"
-              style={styles.input}
-              value={nTitle}
-              onChangeText={setNTitle}
-              placeholder="e.g. Read chapter 3"
-              placeholderTextColor={colors.textMuted}
-              autoFocus
-            />
-            <View style={{ flexDirection: "row", gap: space.md, marginTop: space.md }}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.label}>START</Text>
-                <TextInput
-                  testID="planner-new-start"
-                  style={[styles.input, styles.inputMono]}
-                  value={nStart}
-                  onChangeText={setNStart}
-                  placeholder="14:00"
-                  placeholderTextColor={colors.textMuted}
-                />
+      {modal && (
+        <View style={styles.overlay} pointerEvents="box-none">
+          <Pressable
+            testID="planner-overlay-backdrop"
+            style={StyleSheet.absoluteFill}
+            onPress={() => setModal(false)}
+          />
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            style={styles.sheetWrap}
+            pointerEvents="box-none"
+          >
+            <View style={styles.sheet}>
+              <View style={styles.sheetHandle} />
+              <Text style={styles.modalTitle}>New task</Text>
+              <Text style={styles.label}>WHAT</Text>
+              <TextInput
+                testID="planner-new-title"
+                style={styles.input}
+                value={nTitle}
+                onChangeText={setNTitle}
+                placeholder="e.g. Read chapter 3"
+                placeholderTextColor={colors.textMuted}
+                autoFocus
+              />
+              <View style={{ flexDirection: "row", gap: space.md, marginTop: space.md }}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.label}>START</Text>
+                  <TextInput
+                    testID="planner-new-start"
+                    style={[styles.input, styles.inputMono]}
+                    value={nStart}
+                    onChangeText={setNStart}
+                    placeholder="14:00"
+                    placeholderTextColor={colors.textMuted}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.label}>END</Text>
+                  <TextInput
+                    testID="planner-new-end"
+                    style={[styles.input, styles.inputMono]}
+                    value={nEnd}
+                    onChangeText={setNEnd}
+                    placeholder="15:00"
+                    placeholderTextColor={colors.textMuted}
+                  />
+                </View>
               </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.label}>END</Text>
-                <TextInput
-                  testID="planner-new-end"
-                  style={[styles.input, styles.inputMono]}
-                  value={nEnd}
-                  onChangeText={setNEnd}
-                  placeholder="15:00"
-                  placeholderTextColor={colors.textMuted}
-                />
+              <View style={{ flexDirection: "row", gap: space.sm, marginTop: space.lg }}>
+                <Pressable
+                  testID="planner-modal-cancel"
+                  onPress={() => setModal(false)}
+                  style={[styles.btn, styles.btnGhost, { flex: 1 }]}
+                >
+                  <Text style={[styles.btnText, { color: colors.navy900 }]}>CANCEL</Text>
+                </Pressable>
+                <Pressable
+                  testID="planner-modal-save"
+                  onPress={addTask}
+                  style={[styles.btn, { flex: 1 }]}
+                  disabled={saving}
+                >
+                  <Text style={styles.btnText}>{saving ? "SAVING…" : "ADD"}</Text>
+                </Pressable>
               </View>
             </View>
-            <View style={{ flexDirection: "row", gap: space.sm, marginTop: space.lg }}>
-              <Pressable
-                testID="planner-modal-cancel"
-                onPress={() => setModal(false)}
-                style={[styles.btn, styles.btnGhost, { flex: 1 }]}
-              >
-                <Text style={[styles.btnText, { color: colors.navy900 }]}>CANCEL</Text>
-              </Pressable>
-              <Pressable
-                testID="planner-modal-save"
-                onPress={addTask}
-                style={[styles.btn, { flex: 1 }]}
-                disabled={saving}
-              >
-                <Text style={styles.btnText}>{saving ? "SAVING…" : "ADD"}</Text>
-              </Pressable>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
+          </KeyboardAvoidingView>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -254,8 +262,22 @@ const styles = StyleSheet.create({
   },
   fabText: { fontFamily: fonts.body, fontWeight: "700", color: colors.navy900, letterSpacing: 1 },
 
-  modalWrap: { flex: 1, backgroundColor: "rgba(11,19,43,0.85)", justifyContent: "flex-end" },
-  modal: { backgroundColor: colors.surface, padding: space.lg, borderTopWidth: 3, borderTopColor: colors.gold500 },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(11,19,43,0.75)",
+    zIndex: 100,
+    elevation: 100,
+    justifyContent: "flex-end",
+  },
+  sheetWrap: { width: "100%" },
+  sheet: {
+    backgroundColor: colors.surface,
+    padding: space.lg,
+    paddingBottom: space.xl,
+    borderTopWidth: 3,
+    borderTopColor: colors.gold500,
+  },
+  sheetHandle: { width: 40, height: 3, backgroundColor: colors.border, alignSelf: "center", marginBottom: space.md },
   modalTitle: { ...t.h2, color: colors.navy900, marginBottom: space.md },
   label: { ...t.label, color: colors.navy800, marginBottom: 4 },
   input: {

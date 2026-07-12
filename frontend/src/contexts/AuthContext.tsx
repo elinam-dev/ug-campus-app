@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 import { api, clearToken, getToken, setToken } from "@/src/api/client";
@@ -75,6 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = useCallback(async () => {
     await clearToken();
     setUser(null);
+    router.replace("/login");
   }, []);
 
   return (
