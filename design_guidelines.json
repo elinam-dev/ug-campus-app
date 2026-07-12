@@ -1,0 +1,119 @@
+{
+  "theme_and_concept": {
+    "identity": "Christian, academically-serious, but warm. Designed for University of Ghana students.",
+    "vibe": "Textbook meets daily planner. Structured, anchored, and intentional. Avoids all SaaS clichés.",
+    "anti_patterns": [
+      "Purple/blue gradient hero sections",
+      "Inter or Poppins as the only font",
+      "Generic centered card layouts with drop shadows",
+      "Emoji used as icons",
+      "Rounded-everything",
+      "Pastel backgrounds",
+      "Bland centered layouts"
+    ]
+  },
+  "typography": {
+    "imports": "@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Work+Sans:wght@400;500;600&family=Zilla+Slab:ital,wght@0,400;0,600;0,700;1,400&display=swap');",
+    "families": {
+      "headings": {
+        "fontFamily": "'Zilla Slab', serif",
+        "tailwind_class": "font-serif",
+        "description": "Sturdy slab-serif for all headings (H1-H4). Brings academic weight and traditional warmth."
+      },
+      "body": {
+        "fontFamily": "'Work Sans', sans-serif",
+        "tailwind_class": "font-sans",
+        "description": "Clean, humanist sans-serif for readable UI text and paragraphs."
+      },
+      "mono": {
+        "fontFamily": "'IBM Plex Mono', monospace",
+        "tailwind_class": "font-mono",
+        "description": "Used exclusively for course codes, times, and GPA numbers (data feel)."
+      }
+    },
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl font-bold tracking-tight font-serif text-navy-900",
+      "h2": "text-2xl sm:text-3xl font-semibold font-serif text-navy-900",
+      "body": "text-base font-sans text-slate-800 leading-relaxed",
+      "data": "text-sm font-mono tracking-wide text-navy-800"
+    }
+  },
+  "colors": {
+    "primary": {
+      "navy-900": "#0B132B",
+      "navy-800": "#1C2541",
+      "usage": "Primary brand color, text, structural borders, deep headers."
+    },
+    "accent": {
+      "gold-500": "#D4AF37",
+      "gold-400": "#E5C158",
+      "usage": "Buttons, highlights, Verse of the Day accents, active states."
+    },
+    "secondary": {
+      "sage-700": "#4A5D23",
+      "sage-600": "#556B2F",
+      "sage-100": "#E8ECE1",
+      "usage": "Success states, completed tasks, soft backgrounds for academic resources."
+    },
+    "neutral": {
+      "background": "#FAFAFA",
+      "surface": "#FFFFFF",
+      "border": "#E2E8F0",
+      "text-main": "#1E293B"
+    }
+  },
+  "layouts": {
+    "global": "Mobile-first layout. Flat, structural layout. Left-aligned content prioritizing reading flow.",
+    "signature_element_today_strip": {
+      "description": "A horizontal timeline at the top of the dashboard showing verse -> classes -> free slots. It MUST be visually connected as ONE CONTINUOUS TIMELINE.",
+      "implementation": "Use a horizontal scrollable flex container (overflow-x-auto, snap-x) with a background absolute horizontal line connecting the nodes. Nodes should be distinct markers on this timeline.",
+      "styles": "Flex row, gap-4, relative padding. Each item has a top marker (dot or icon) sitting on the line, with content hanging below."
+    },
+    "cards_and_containers": "Do NOT use rounded-xl or heavy drop shadows. Use border border-navy-900/20 with rounded-sm and shadow-none. Brutalist-lite/textbook approach."
+  },
+  "components": {
+    "daily_scripture_gate": "Full screen overlay before dashboard. Deep navy background (bg-navy-900), gold text (text-gold-400) for the reference, white Zilla Slab for the verse text. A sturdy 'Enter Campus' button.",
+    "buttons": "Sharp corners or rounded-sm. Solid bg-navy-900 text-white, or bg-gold-500 text-navy-900. No pill-shapes.",
+    "inputs": "Square or rounded-sm borders. Focus state: ring-2 ring-gold-500 ring-offset-1.",
+    "icons": "Use lucide-react. Stroke-width 2. NO EMOJIS."
+  },
+  "media": {
+    "rules": "Avoid cliché stock. Use real photography representing studying, African context, and faith.",
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1567536894065-1d8a627a9561?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTJ8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwc3R1ZGVudCUyMHN0dWR5aW5nJTIwbGlicmFyeSUyMGFmcmljYW58ZW58MHx8fHwxNzgzODI3NzQ5fDA&ixlib=rb-4.1.0&q=85",
+        "description": "African woman studying in library",
+        "usage": "Learning Resources banner or Onboarding screen"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NjZ8MHwxfHNlYXJjaHwyfHxtb3JuaW5nJTIwZGV2b3Rpb24lMjBiaWJsZXxlbnwwfHx8fDE3ODM4Mjc3NDl8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Open Bible in morning light",
+        "usage": "Daily Scripture gate background (with heavy navy overlay)"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1770721666606-824d95fea1a7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTJ8MHwxfHNlYXJjaHwzfHxnaGFuYSUyMGNhbXB1c3xlbnwwfHx8fDE3ODM4Mjc3NDl8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Campus building with clock tower and palm trees",
+        "usage": "Login screen or App Header background"
+      }
+    ],
+    "overlays": "Never use transparent overlays over images if text is on top. Use bg-navy-900/80 or solid bg. Ensure no dropdowns/headers use transparent background over content."
+  },
+  "motion": {
+    "transitions": "Snappy, intentional. Use duration-150 ease-out. No slow, floaty animations.",
+    "today_strip": "Smooth horizontal scrolling with snap-x snap-mandatory."
+  },
+  "accessibility": {
+    "contrast": "Ensure gold-500 on white is readable, or use it for large text/accents. Navy-900 text on sand-50 background provides excellent contrast.",
+    "data_testid": "ALL interactive and key informational elements MUST include a data-testid attribute formatted as kebab-case, role-based. Example: data-testid='login-submit-button', data-testid='scripture-verse-text'."
+  },
+  "instructions_to_main_agent": [
+    "Configure Tailwind with the provided custom colors and font families in tailwind.config.js.",
+    "Use standard HTML/Tailwind for layouts in .js files, heavily modifying any Shadcn components to remove rounded corners, drop shadows, and 'SaaS' aesthetics.",
+    "Implement the 'Today Strip' as the absolute visual anchor of the dashboard. It must show Verse -> Classes -> Free slots connected by a horizontal line.",
+    "Course codes (e.g., CSCD 311) and GPAs must use the monospace font (IBM Plex Mono).",
+    "Do NOT center-align lists or blocks of text. Left-align for an academic, structured feel.",
+    "The daily scripture is a hard gate - full screen overlay blocking the app until acknowledged.",
+    "Ensure the app feels like a cross between a classic textbook and a premium physical planner. Use solid borders, structural hierarchy."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": "You tend to converge toward generic, 'on distribution' outputs. In frontend design, this creates what users call the 'AI slop' aesthetic. Avoid this: make creative, distinctive frontends that surprise and delight. Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients. Don't make generic centered layouts, simplistic gradients, and uniform styling. Create depth through layered design elements with z-index hierarchy. You MUST NOT apply universal transition. Eg: `transition: all`. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms. You MUST NOT center align the app container. Always use modern but context-appropriate button styles. NEVER use AI assistant Emoji characters. Every interaction needs micro-animations. Use generous spacing. Subtle grain textures separate good from extraordinary. ALL interactive elements MUST include data-testid. Use sonner for toasts. Do not use complete transparent backgrounds over content."
+}
